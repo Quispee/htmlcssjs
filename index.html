@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flyer Evento</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Rajdhani', sans-serif;
+  }
+  .flyer {
+    width: 480px;
+    height: 850px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, #050510 0%, #0a0520 20%, #150010 50%, #1a0500 75%, #0a0000 100%);
+    border: 1px solid #333;
+  }
+  #particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+  .lightning { position: absolute; top: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+  .fire-container {
+    position: absolute; bottom: 0; left: 0;
+    width: 100%; height: 300px;
+    z-index: 3; pointer-events: none;
+  }
+  .flame {
+    position: absolute; bottom: 0;
+    border-radius: 50% 50% 20% 20%;
+    animation: burn linear infinite;
+    transform-origin: bottom center;
+  }
+  @keyframes burn {
+    0%   { transform: scaleY(1) scaleX(1) rotate(-2deg); opacity: 0.9; }
+    25%  { transform: scaleY(1.15) scaleX(0.9) rotate(1deg); opacity: 1; }
+    50%  { transform: scaleY(0.95) scaleX(1.1) rotate(-1deg); opacity: 0.85; }
+    75%  { transform: scaleY(1.2) scaleX(0.85) rotate(2deg); opacity: 1; }
+    100% { transform: scaleY(1) scaleX(1) rotate(-2deg); opacity: 0.9; }
+  }
+  .content {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 10;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .header { width: 100%; text-align: center; padding-top: 18px; position: relative; }
+  .title-main {
+    font-family: 'Cinzel', serif;
+    font-size: 54px; font-weight: 900; letter-spacing: 6px;
+    background: linear-gradient(180deg, #ffffff 0%, #ffd700 40%, #ff8800 70%, #cc4400 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    filter: drop-shadow(0 0 12px rgba(255,165,0,0.8));
+    animation: shimmer 3s ease-in-out infinite;
+    position: relative; z-index: 2;
+  }
+  @keyframes shimmer {
+    0%, 100% { filter: drop-shadow(0 0 8px rgba(255,165,0,0.6)); }
+    50% { filter: drop-shadow(0 0 20px rgba(255,200,0,1)) drop-shadow(0 0 40px rgba(255,100,0,0.5)); }
+  }
+  .streamer-photo {
+    width: 150px; height: 150px; border-radius: 50%; overflow: hidden;
+    position: relative; z-index: 2;
+    border: 3px solid #ffd700;
+    box-shadow: 0 0 20px #ffd700, 0 0 40px rgba(255,165,0,0.5);
+    animation: glowPulse 2s ease-in-out infinite;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif; font-size: 40px; font-weight: 900; color: #ffd700;
+  }
+  .streamer-photo img { width: 100%; height: 100%; object-fit: cover; }
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 15px #ffd700, 0 0 30px rgba(255,140,0,0.4); }
+    50% { box-shadow: 0 0 25px #ffd700, 0 0 50px rgba(255,140,0,0.7), 0 0 70px rgba(255,80,0,0.3); }
+  }
+  .streamer-name {
+    font-family: 'Cinzel', serif; font-size: 30px; font-weight: 900; letter-spacing: 8px;
+    background: linear-gradient(135deg, #4db8ff, #1e90ff, #0055cc);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    filter: drop-shadow(0 0 8px rgba(30,144,255,0.8));
+  }
+  .goal-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,140,0,0.1));
+    border: 1px solid rgba(255,215,0,0.4);
+    border-radius: 20px; padding: 4px 16px; margin-top: 6px;
+  }
+  .goal-text { font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; color: #ffd700; letter-spacing: 2px; text-transform: uppercase; }
+  .goal-num { font-family: 'Cinzel', serif; font-size: 18px; font-weight: 900; color: #ffd700; text-shadow: 0 0 10px #ffd700; }
+  .divider {
+    width: 80%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,215,0,0.5), rgba(255,80,0,0.5), transparent);
+    margin: 8px 0;
+  }
+  .date-label {
+    font-family: 'Cinzel', serif; font-size: 24px; font-weight: 700;
+    color: #fff; letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(255,255,255,0.3); margin-bottom: 6px;
+  }
+  .schedules { display: flex; flex-direction: column; gap: 4px; width: 82%; }
+  .schedule-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 14px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 8px;
+    border-left: 2px solid rgba(255,100,0,0.5);
+  }
+  .flags { font-size: 17px; min-width: 44px; }
+  .time { font-family: 'Cinzel', serif; font-size: 17px; font-weight: 700; color: #fff; }
+ 
+  /* ANFITRIONA - esquina inferior derecha */
+  .host-section {
+    position: absolute;
+    bottom: 200px;
+    right: 18px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .host-photo-wrap {
+    position: relative;
+    width: 110px; height: 110px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .host-photo {
+    width: 100px; height: 100px; border-radius: 50%; overflow: hidden;
+    border: 3px solid #ff00ff;
+    box-shadow: 0 0 25px #ff00ff, 0 0 50px rgba(255,0,255,0.7), 0 0 80px rgba(200,0,255,0.4);
+    animation: hostGlow 2s ease-in-out infinite;
+    background: linear-gradient(135deg, #2a0040, #1a0030);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; color: #ff00ff;
+    position: relative; z-index: 2;
+  }
+  .host-photo img { width: 100%; height: 100%; object-fit: cover; }
+  @keyframes hostGlow {
+    0%, 100% { box-shadow: 0 0 20px #ff00ff, 0 0 40px rgba(255,0,255,0.6); }
+    50% { box-shadow: 0 0 40px #ff00ff, 0 0 80px rgba(255,0,255,1), 0 0 110px rgba(200,0,255,0.6); }
+  }
+  .host-ring-svg {
+    position: absolute; top: -10px; left: -10px;
+    width: 130px; height: 130px; z-index: 1;
+  }
+  .host-label {
+    font-family: 'Cinzel', serif; font-size: 15px; font-weight: 900;
+    color: #ff00ff; letter-spacing: 2px;
+    text-shadow: 0 0 12px #ff00ff, 0 0 25px rgba(255,0,255,0.9);
+    margin-top: 5px;
+    animation: hostTextGlow 2s ease-in-out infinite;
+    text-align: center;
+  }
+  @keyframes hostTextGlow {
+    0%, 100% { text-shadow: 0 0 10px #ff00ff, 0 0 20px rgba(255,0,255,0.6); }
+    50% { text-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff, 0 0 60px rgba(255,0,255,0.7); }
+  }
+  .host-sublabel {
+    font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700;
+    color: #ff88ff; letter-spacing: 2px; text-transform: uppercase;
+    text-shadow: 0 0 6px rgba(255,100,255,0.8);
+    text-align: center;
+  }
+ 
+  .bottom-glow {
+    position: absolute; bottom: 0; left: 0;
+    width: 100%; height: 80px;
+    background: linear-gradient(0deg, rgba(255,50,0,0.3), transparent);
+    z-index: 4; pointer-events: none;
+  }
+  .sparkle {
+    position: absolute; bottom: 20px; left: 20px;
+    font-size: 20px; color: #fff; opacity: 0.6; z-index: 20;
+    animation: twinkle 2s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.3); }
+  }
+</style>
+</head>
+<body>
+<div class="flyer">
+ 
+  <canvas id="particles"></canvas>
+  <div class="fire-container" id="fireContainer"></div>
+  <div class="bottom-glow"></div>
+ 
+  <!-- Rayos SVG -->
+  <svg class="lightning" viewBox="0 0 480 850" xmlns="http://www.w3.org/2000/svg">
+    <polyline points="30,0 18,120 35,120 10,260" fill="none" stroke="#4488ff" stroke-width="2" opacity="0.6">
+      <animate attributeName="opacity" values="0.6;1;0.2;0.8;0.6" dur="3s" repeatCount="indefinite"/>
+    </polyline>
+    <polyline points="60,0 45,100 62,100 30,220" fill="none" stroke="#6699ff" stroke-width="1" opacity="0.4">
+      <animate attributeName="opacity" values="0.4;0.8;0.1;0.6;0.4" dur="2.5s" repeatCount="indefinite"/>
+    </polyline>
+    <polyline points="450,0 462,110 445,110 470,250" fill="none" stroke="#ff6600" stroke-width="2" opacity="0.6">
+      <animate attributeName="opacity" values="0.6;0.2;1;0.5;0.6" dur="3.5s" repeatCount="indefinite"/>
+    </polyline>
+    <polyline points="420,0 435,95 418,95 450,210" fill="none" stroke="#ff8844" stroke-width="1" opacity="0.4">
+      <animate attributeName="opacity" values="0.4;1;0.2;0.7;0.4" dur="2.8s" repeatCount="indefinite"/>
+    </polyline>
+    <ellipse cx="240" cy="0" rx="120" ry="40" fill="url(#topGlow)" opacity="0.5">
+      <animate attributeName="opacity" values="0.5;0.8;0.3;0.5" dur="4s" repeatCount="indefinite"/>
+    </ellipse>
+    <defs>
+      <radialGradient id="topGlow" cx="50%" cy="0%" r="100%">
+        <stop offset="0%" stop-color="#aa44ff" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#aa44ff" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+  </svg>
+ 
+  <!-- CONTENIDO -->
+  <div class="content">
+ 
+    <!-- TÍTULO -->
+    <div class="header">
+      <div class="title-main">SECUESTRO</div>
+    </div>
+ 
+    <!-- ALAS + BADGE -->
+    <div style="position:relative; width:380px; height:160px; margin-top:-8px;">
+      <svg viewBox="0 0 380 160" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:100%;height:100%;">
+        <g opacity="0.9">
+          <path d="M190,80 C160,60 120,30 80,20 C50,12 20,18 5,30 C30,45 60,55 85,65 C110,75 140,80 160,82Z" fill="#0044cc" opacity="0.8"/>
+          <path d="M190,80 C155,65 110,45 70,45 C40,45 15,55 5,65 C35,72 65,75 95,78 C125,81 160,82 180,83Z" fill="#1166ee" opacity="0.7"/>
+          <path d="M190,80 C150,75 110,70 80,72 C55,74 30,80 10,88 C40,90 75,88 105,87 C135,86 165,84 185,83Z" fill="#3388ff" opacity="0.6"/>
+          <path d="M190,82 C160,85 125,90 100,96 C75,102 50,108 25,110 C50,106 80,100 108,96 C136,92 165,88 185,86Z" fill="#55aaff" opacity="0.5"/>
+          <path d="M190,80 C170,70 145,58 118,52" fill="none" stroke="#88ccff" stroke-width="1.5" opacity="0.6"/>
+          <path d="M190,80 C168,74 140,66 112,63" fill="none" stroke="#88ccff" stroke-width="1" opacity="0.5"/>
+          <path d="M190,80 C165,78 138,76 110,76" fill="none" stroke="#aaddff" stroke-width="1" opacity="0.4"/>
+        </g>
+        <g opacity="0.9">
+          <path d="M190,80 C220,60 260,30 300,20 C330,12 360,18 375,30 C350,45 320,55 295,65 C270,75 240,80 220,82Z" fill="#cc3300" opacity="0.8"/>
+          <path d="M190,80 C225,65 270,45 310,45 C340,45 365,55 375,65 C345,72 315,75 285,78 C255,81 220,82 200,83Z" fill="#ee5511" opacity="0.7"/>
+          <path d="M190,80 C230,75 270,70 300,72 C325,74 350,80 370,88 C340,90 305,88 275,87 C245,86 215,84 195,83Z" fill="#ff7722" opacity="0.6"/>
+          <path d="M190,82 C220,85 255,90 280,96 C305,102 330,108 355,110 C330,106 300,100 272,96 C244,92 215,88 195,86Z" fill="#ffaa44" opacity="0.5"/>
+          <path d="M190,80 C210,70 235,58 262,52" fill="none" stroke="#ffcc88" stroke-width="1.5" opacity="0.6"/>
+          <path d="M190,80 C212,74 240,66 268,63" fill="none" stroke="#ffcc88" stroke-width="1" opacity="0.5"/>
+          <path d="M190,80 C215,78 242,76 270,76" fill="none" stroke="#ffddaa" stroke-width="1" opacity="0.4"/>
+        </g>
+        <path d="M190,10 L185,25 L175,20 L183,32 L180,45 L190,38 L200,45 L197,32 L205,20 L195,25Z" fill="#ffd700" opacity="0.9" filter="url(#crownGlow)"/>
+        <defs>
+          <filter id="crownGlow">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+      </svg>
+ 
+      <!-- BADGE CIRCULAR -->
+      <div style="position:absolute;top:18px;left:50%;transform:translateX(-50%);width:200px;height:200px;display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 200 200" style="position:absolute;top:0;left:0;width:100%;height:100%;">
+          <circle cx="100" cy="100" r="95" fill="none" stroke="#ffd700" stroke-width="2.5" opacity="0.7"/>
+          <circle cx="100" cy="100" r="88" fill="rgba(0,0,0,0.5)" stroke="#cc8800" stroke-width="1" opacity="0.5"/>
+          <path id="topArc" d="M 28,100 A 72,72 0 0,1 172,100" fill="none"/>
+          <text font-family="Cinzel" font-size="13" font-weight="700" fill="#ffd700" letter-spacing="3">
+            <textPath href="#topArc" startOffset="12%">FAMILIA ♥ UNIDA</textPath>
+          </text>
+          <circle cx="35" cy="120" r="6" fill="#ffd700" opacity="0.7"/>
+          <circle cx="25" cy="130" r="5" fill="#ffaa00" opacity="0.6"/>
+          <circle cx="40" cy="133" r="4" fill="#ffd700" opacity="0.5"/>
+          <circle cx="165" cy="120" r="6" fill="#ffd700" opacity="0.7"/>
+          <circle cx="175" cy="130" r="5" fill="#ffaa00" opacity="0.6"/>
+          <circle cx="160" cy="133" r="4" fill="#ffd700" opacity="0.5"/>
+        </svg>
+        <div class="streamer-photo">
+          <img src="uno.jpg" alt="Alex">
+        </div>
+      </div>
+    </div>
+ 
+    <!-- NOMBRE + META -->
+    <div style="margin-top:82px; display:flex; flex-direction:column; align-items:center; gap:4px;">
+      <div class="streamer-name">CUEVITA</div>
+      <div class="goal-badge">
+        <span class="goal-text">Objetivo</span>
+        <span class="goal-num">Ramo Buchon</span>
+        <span style="font-size:16px;">🏆</span>
+      </div>
+    </div>
+ 
+    <div class="divider" style="margin:10px 0;"></div>
+ 
+    <!-- FECHA -->
+    <div class="date-label">27 DE JUNIO</div>
+ 
+    <!-- HORARIOS -->
+    <!-- HORARIOS -->
+<div class="schedules">
+  <div class="schedule-row" style="border-left:3px solid #ffd700; background:rgba(255,215,0,0.08); padding:7px 14px;">
+   <span class="flags" style="color:#ffd700; text-shadow:0 0 8px #ffd700, 0 0 20px #ffd700;">🇺🇸</span>
+    <span style="font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase; min-width:55px; color:#ffd700; text-shadow:0 0 10px #ffd700, 0 0 20px #ffd700;">MIAMI</span>
+    <span class="time" style="font-size:22px; color:#ffd700; text-shadow:0 0 12px #ffd700, 0 0 24px rgba(255,215,0,0.8);">8:00 PM</span>
+  </div>
+  <div class="schedule-row" style="border-left:2px solid #00ffcc; background:rgba(0,255,200,0.05);">
+    <span class="flags" style="color:#00ffcc; text-shadow:0 0 8px #00ffcc, 0 0 20px #00ffcc;">🇲🇽🇬🇹</span>
+    <span style="font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:700; letter-spacing:1px; min-width:55px; color:#00ffcc; text-shadow:0 0 10px #00ffcc, 0 0 25px #00ffcc, 0 0 40px rgba(0,255,200,0.6);">MX · GT</span>
+    <span class="time" style="color:#00ffcc; text-shadow:0 0 10px #00ffcc, 0 0 25px #00ffcc;">7:00 PM</span>
+  </div>
+  <div class="schedule-row" style="border-left:2px solid #ff00aa; background:rgba(255,0,170,0.05);">
+    <span class="flags" style="color:#ff00aa; text-shadow:0 0 8px #ff00aa, 0 0 20px #ff00aa;">🇵🇪</span>
+    <span style="font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:700; letter-spacing:1px; min-width:55px; color:#ff00aa; text-shadow:0 0 10px #ff00aa, 0 0 25px #ff00aa, 0 0 40px rgba(255,0,170,0.6);">PERÚ</span>
+    <span class="time" style="color:#ff00aa; text-shadow:0 0 10px #ff00aa, 0 0 25px #ff00aa;">7:00 PM</span>
+  </div>
+  <div class="schedule-row" style="border-left:2px solid #00ff44; background:rgba(0,255,68,0.05);">
+    <span class="flags" style="color:#00ff44; text-shadow:0 0 8px #00ff44, 0 0 20px #00ff44;">🇨🇱🇧🇴</span>
+    <span style="font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:700; letter-spacing:1px; min-width:55px; color:#00ff44; text-shadow:0 0 10px #00ff44, 0 0 25px #00ff44, 0 0 40px rgba(0,255,68,0.6);">CL · BO</span>
+    <span class="time" style="color:#00ff44; text-shadow:0 0 10px #00ff44, 0 0 25px #00ff44;">8:00 PM</span>
+  </div>
+  <div class="schedule-row" style="border-left:2px solid #ff6600; background:rgba(255,102,0,0.05);">
+    <span class="flags" style="color:#ff6600; text-shadow:0 0 8px #ff6600, 0 0 20px #ff6600;">🇧🇷</span>
+    <span style="font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:700; letter-spacing:1px; min-width:55px; color:#ff6600; text-shadow:0 0 10px #ff6600, 0 0 25px #ff6600, 0 0 40px rgba(255,102,0,0.6);">BRASIL</span>
+    <span class="time" style="color:#ff6600; text-shadow:0 0 10px #ff6600, 0 0 25px #ff6600;">9:00 PM</span>
+  </div>
+</div>
+  </div>
+ 
+  <!-- ANFITRIONA - inferior derecha ABSOLUTA -->
+  <div class="host-section">
+    <div class="host-photo-wrap">
+      <svg class="host-ring-svg" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="65" cy="65" r="60" fill="none" stroke="#ff00ff" stroke-width="2" stroke-dasharray="6,3" opacity="0.8">
+          <animateTransform attributeName="transform" type="rotate" from="0 65 65" to="360 65 65" dur="8s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="65" cy="65" r="52" fill="none" stroke="#cc00cc" stroke-width="1.5" stroke-dasharray="3,6" opacity="0.6">
+          <animateTransform attributeName="transform" type="rotate" from="360 65 65" to="0 65 65" dur="5s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Destellos en los 4 puntos cardinales -->
+        <polygon points="65,2 67,8 65,14 63,8" fill="#ff00ff" opacity="0.9"/>
+        <polygon points="65,116 67,122 65,128 63,122" fill="#ff00ff" opacity="0.9"/>
+        <polygon points="2,65 8,67 14,65 8,63" fill="#ff00ff" opacity="0.9"/>
+        <polygon points="116,65 122,67 128,65 122,63" fill="#ff00ff" opacity="0.9"/>
+      </svg>
+      <div class="host-photo">
+        <img src="estre.jpg" alt="Anfitriona">
+      </div>
+    </div>
+    <div class="host-label">✦ Anfitriona ✦</div>
+    <div class="host-sublabel">Consentida</div>
+  </div>
+ 
+  <div class="sparkle">✦</div>
+ 
+</div>
+ 
+<script>
+// PARTÍCULAS
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = 480; canvas.height = 850;
+const particles = [];
+for (let i = 0; i < 60; i++) {
+  particles.push({
+    x: Math.random() * 480, y: Math.random() * 850,
+    size: Math.random() * 2 + 0.5,
+    speedY: -(Math.random() * 0.8 + 0.2),
+    speedX: (Math.random() - 0.5) * 0.4,
+    opacity: Math.random(),
+    color: Math.random() > 0.5
+      ? `rgba(255,${Math.floor(Math.random()*100+80)},0,`
+      : `rgba(${Math.floor(Math.random()*50+150)},${Math.floor(Math.random()*80+100)},255,`
+  });
+}
+function animateParticles() {
+  ctx.clearRect(0, 0, 480, 850);
+  for (const p of particles) {
+    p.y += p.speedY; p.x += p.speedX; p.opacity -= 0.003;
+    if (p.y < 0 || p.opacity <= 0) {
+      p.y = 850; p.x = Math.random() * 480;
+      p.opacity = Math.random() * 0.7 + 0.3;
+    }
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fillStyle = p.color + p.opacity + ')';
+    ctx.fill();
+  }
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+ 
+// LLAMAS
+const fireContainer = document.getElementById('fireContainer');
+const flameData = [
+  {left:'3%',w:60,h:180,c1:'#ff2200',c2:'#ff6600',dur:1.6},
+  {left:'10%',w:45,h:140,c1:'#ff4400',c2:'#ffaa00',dur:1.9},
+  {left:'18%',w:70,h:200,c1:'#ff1100',c2:'#ff5500',dur:1.4},
+  {left:'28%',w:50,h:160,c1:'#ff3300',c2:'#ff8800',dur:2.1},
+  {left:'38%',w:80,h:220,c1:'#ff2200',c2:'#ffcc00',dur:1.7},
+  {left:'48%',w:55,h:170,c1:'#ff4400',c2:'#ff7700',dur:1.5},
+  {left:'57%',w:75,h:200,c1:'#ff1100',c2:'#ff5500',dur:1.8},
+  {left:'66%',w:50,h:150,c1:'#ff3300',c2:'#ffaa00',dur:2.0},
+  {left:'74%',w:65,h:185,c1:'#ff2200',c2:'#ff6600',dur:1.6},
+  {left:'82%',w:55,h:165,c1:'#ff4400',c2:'#ff8800',dur:1.3},
+  {left:'89%',w:45,h:145,c1:'#ff1100',c2:'#ffcc00',dur:1.9},
+  {left:'94%',w:40,h:130,c1:'#ff3300',c2:'#ff7700',dur:2.2},
+];
+flameData.forEach(f => {
+  const el = document.createElement('div');
+  el.className = 'flame';
+  el.style.cssText = `left:${f.left};width:${f.w}px;height:${f.h}px;background:radial-gradient(ellipse at 50% 100%,${f.c1} 0%,${f.c2} 40%,rgba(255,200,0,0.3) 70%,transparent 100%);animation-duration:${f.dur}s;animation-delay:${Math.random()*1.5}s;`;
+  fireContainer.appendChild(el);
+});
+[...Array(6)].forEach((_,i) => {
+  const el = document.createElement('div');
+  el.className = 'flame';
+  const pos = ['8%','23%','38%','52%','67%','82%'];
+  el.style.cssText = `left:${pos[i]};width:30px;height:${100+i*15}px;background:radial-gradient(ellipse at 50% 100%,#ffffff 0%,#ffff00 30%,#ff8800 60%,transparent 100%);animation-duration:${1.2+i*0.2}s;animation-delay:${i*0.3}s;opacity:0.6;`;
+  fireContainer.appendChild(el);
+});
+</script>
+</body>
+</html>
